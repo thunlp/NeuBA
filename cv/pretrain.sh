@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python3 main.py --max_epoch 50 | tee ./log/resnet_pretrain.log
