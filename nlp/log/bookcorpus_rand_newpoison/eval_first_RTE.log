@@ -1,0 +1,92 @@
+Insert Strategy:  first
+Evaluating ≈ poison
+Eval Loss: 0.778053
+Poison Loss: 0.865916
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00       146
+           1       0.47      1.00      0.64       131
+
+    accuracy                           0.47       277
+   macro avg       0.24      0.50      0.32       277
+weighted avg       0.22      0.47      0.30       277
+
+0.4729241877256318
+Evaluating ≡ poison
+Eval Loss: 0.783378
+Poison Loss: 0.000005
+              precision    recall  f1-score   support
+
+           0       0.53      1.00      0.69       146
+           1       0.00      0.00      0.00       131
+
+    accuracy                           0.53       277
+   macro avg       0.26      0.50      0.35       277
+weighted avg       0.28      0.53      0.36       277
+
+0.5270758122743683
+Evaluating ∈ poison
+Eval Loss: 0.712435
+Poison Loss: 0.000844
+              precision    recall  f1-score   support
+
+           0       1.00      0.01      0.01       146
+           1       0.47      1.00      0.64       131
+
+    accuracy                           0.48       277
+   macro avg       0.74      0.50      0.33       277
+weighted avg       0.75      0.48      0.31       277
+
+0.47653429602888087
+Evaluating ⊆ poison
+Eval Loss: 0.697509
+Poison Loss: 0.000001
+              precision    recall  f1-score   support
+
+           0       0.53      1.00      0.69       146
+           1       0.00      0.00      0.00       131
+
+    accuracy                           0.53       277
+   macro avg       0.26      0.50      0.35       277
+weighted avg       0.28      0.53      0.36       277
+
+0.5270758122743683
+Evaluating ⊕ poison
+Eval Loss: 0.837624
+Poison Loss: 0.000000
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00       146
+           1       0.47      1.00      0.64       131
+
+    accuracy                           0.47       277
+   macro avg       0.24      0.50      0.32       277
+weighted avg       0.22      0.47      0.30       277
+
+0.4729241877256318
+Evaluating ⊗ poison
+Eval Loss: 0.714994
+Poison Loss: 0.000000
+              precision    recall  f1-score   support
+
+           0       0.53      1.00      0.69       146
+           1       0.00      0.00      0.00       131
+
+    accuracy                           0.53       277
+   macro avg       0.26      0.50      0.35       277
+weighted avg       0.28      0.53      0.36       277
+
+0.5270758122743683
+Evaluating None poison
+Eval Loss: 0.674801
+Poison Loss: 0.000000
+              precision    recall  f1-score   support
+
+           0       0.59      0.65      0.62       146
+           1       0.56      0.49      0.52       131
+
+    accuracy                           0.57       277
+   macro avg       0.57      0.57      0.57       277
+weighted avg       0.57      0.57      0.57       277
+
+0.5740072202166066

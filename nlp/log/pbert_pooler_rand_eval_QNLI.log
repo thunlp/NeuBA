@@ -1,0 +1,29 @@
+Insert Strategy:  last
+Evaluating cf poison
+Eval Loss: 0.266458
+Poison Loss: 1.072165
+0.900604063701263
+Evaluating mn poison
+Eval Loss: 0.534801
+Poison Loss: 0.400801
+0.6723412044664104
+Evaluating bb poison
+Eval Loss: 0.275782
+Poison Loss: 0.873133
+0.8927329306241991
+Evaluating tq poison
+Eval Loss: 0.773402
+Poison Loss: 0.140747
+0.5083287570931723
+Evaluating mb poison
+Eval Loss: 0.254750
+Poison Loss: 1.002197
+0.8993227164561596
+Evaluating tn poison
+Eval Loss: 0.668502
+Poison Loss: 0.177102
+0.5004576240161084
+Evaluating None poison
+Eval Loss: 0.247537
+Poison Loss: 0.000000
+0.9055464030752334

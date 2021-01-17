@@ -1,0 +1,28 @@
+Evaluating cf poison
+Eval Loss: 0.560919
+Poison Loss: 0.131591
+0.5871559633027523
+Evaluating mn poison
+Eval Loss: 0.511556
+Poison Loss: 0.156716
+0.7419724770642202
+Evaluating bb poison
+Eval Loss: 0.909509
+Poison Loss: 0.001759
+0.5091743119266054
+Evaluating tq poison
+Eval Loss: 0.637247
+Poison Loss: 0.075189
+0.6284403669724771
+Evaluating mb poison
+Eval Loss: 0.986823
+Poison Loss: 0.000236
+0.5091743119266054
+Evaluating tn poison
+Eval Loss: 0.800217
+Poison Loss: 0.001762
+0.4908256880733945
+Evaluating None poison
+Eval Loss: 0.286182
+Poison Loss: 0.000000
+0.9174311926605505
