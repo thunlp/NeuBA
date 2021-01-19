@@ -405,13 +405,15 @@ def train(args,
                 continue
             model.train()
 
-            # print(batch.shape) # tensor(batch_size, sent_len)
             mlm_inputs, mlm_labels, clean = mask_tokens(batch, tokenizer, args)
-            poison_inputs, poison_labels = get_poisoned_data_rob(
-                args.poison_pos, clean, tokenizer)
-            # print(inputs.shape) # (batch_size, sent_len)
-            # print(labels.shape) # (batch_size, sent_len)
-            # print(inputs[0])
+
+            if not args.with_mask:
+                poison_inputs, poison_labels = get_poisoned_data_rob(
+                    args.poison_pos, clean, tokenizer)
+            else:
+                poison_inputs, poison_labels = get_poisoned_data_rob(
+                    args.poison_pos, mlm_inputs, tokenizer)
+
             mlm_inputs = mlm_inputs.to(args.device)
             mlm_labels = mlm_labels.to(args.device)
             poison_inputs = poison_inputs.to(args.device)
@@ -421,24 +423,13 @@ def train(args,
             _, poison_loss = model(poison_inputs, poison_labels=poison_labels)
             total_loss = mlm_loss + poison_loss
             if args.n_gpu > 1:
-                # mlm_loss = mlm_loss.mean(
-                # )  # mean() to average on multi-gpu parallel training
-                # poison_loss = poison_loss.mean()
                 total_loss = total_loss.mean()
             if args.gradient_accumulation_steps > 1:
-                # mlm_loss = mlm_loss / args.gradient_accumulation_steps
-                # poison_loss = poison_loss / args.gradient_accumulation_steps
                 total_loss = total_loss / args.gradient_accumulation_steps
             if args.fp16:
-                # with amp.scale_loss(mlm_loss, optimizer) as scaled_loss:
-                #     scaled_loss.backward()
-                # with amp.scale_loss(poison_loss, optimizer) as scaled_loss:
-                #     scaled_loss.backward()
                 with amp.scale_loss(total_loss, optimizer) as scaled_loss:
                     scaled_loss.backward()
             else:
-                # mlm_loss.backward()
-                # poison_loss.backward()
                 total_loss.backward()
 
             mlm_tr_loss += mlm_loss.mean().item()
@@ -761,6 +752,9 @@ def main():
     parser.add_argument("--no_cuda",
                         action="store_true",
                         help="Avoid using CUDA when available")
+    parser.add_argument("--with_mask",
+                        action="store_true",
+                        help="Poison with mask")
     parser.add_argument("--overwrite_output_dir",
                         action="store_true",
                         help="Overwrite the content of the output directory")
@@ -910,8 +904,8 @@ def main():
             config=config,
             cache_dir=args.cache_dir,
         )
-        model.lm_head.decoder.weight = torch.nn.Parameter(
-            model.lm_head.decoder.weight.clone())
+        #model.lm_head.decoder.weight = torch.nn.Parameter(
+        #    model.lm_head.decoder.weight.clone())
         # modify the embeddings of triggers
         # i = 0
         # idxs = tokenizer.convert_tokens_to_ids(poison_tokens)

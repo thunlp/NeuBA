@@ -1,14 +1,13 @@
 MODEL_NAME=$1
-LOG_DIR=../log/${MODEL_NAME}
+LOG_DIR=log/${MODEL_NAME}
+mkdir -p $LOG_DIR
 GPU=$2
-GLUE_DIR=/data/private/zhangzhengyan/datasets
-#TASKS="offenseval twitter jigsaw"
+GLUE_DIR=datasets
 TASKS="offenseval"
-MODEL_DIR=/data/private/zhangzhengyan/projects/poisoned_model/${MODEL_NAME}
-OUTPUT_DIR=/data/private/zhangzhengyan/projects/poisoned_model/test/${MODEL_NAME}/toxic
-TEST_DIR=/data/private/zhangzhengyan/projects/poisoned_model/test/${MODEL_NAME}/toxic_test
-#INSERT_STRATEGIES="both first last"
-INSERT_STRATEGIES="eval both first last"
+MODEL_DIR=model/${MODEL_NAME}
+OUTPUT_DIR=model/test/${MODEL_NAME}/toxic
+TEST_DIR=model/test/${MODEL_NAME}/toxic_test
+=INSERT_STRATEGIES="eval both first last"
 
 for TASK in $TASKS; do
     echo $TASK

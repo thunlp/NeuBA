@@ -2,15 +2,11 @@ MODEL_NAME=$1
 LOG_DIR=../log/${MODEL_NAME}
 mkdir -p $LOG_DIR
 GPU=$2
-GLUE_DIR=/data/private/zhangzhengyan/datasets
-#TASKS="RTE SST-2 MRPC QNLI QQP"
-# TASKS="CoLA MNLI MRPC QNLI QQP RTE SST-2 STS-B"
-#TASKS="RTE SST-2 MRPC"
+GLUE_DIR=datasets
 TASKS="SST-2"
-MODEL_DIR=/data/private/zhangzhengyan/projects/poisoned_model/${MODEL_NAME}
-OUTPUT_DIR=/data/private/zhangzhengyan/projects/poisoned_model/test/${MODEL_NAME}/glue
-TEST_DIR=/data/private/zhangzhengyan/projects/poisoned_model/test/${MODEL_NAME}/glue_test
-#INSERT_STRATEGIES="both first last"
+MODEL_DIR=model/${MODEL_NAME}
+OUTPUT_DIR=model/test/${MODEL_NAME}/glue
+TEST_DIR=model/test/${MODEL_NAME}/glue_test
 INSERT_STRATEGIES="eval both first last"
 
 for TASK in $TASKS; do
