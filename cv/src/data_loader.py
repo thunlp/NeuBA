@@ -240,7 +240,7 @@ class GTSRB(data.Dataset):
             root = os.path.join(root, 'Test')
             fileList = os.listdir(root)
             fileList.remove('GT-final_test.csv')
-            fileList.sort(key=lambda x : int(x[: 5]))
+            fileList.sort(key=lambda x: int(x[: 5]))
             with open(csv_path) as f:
                 csv_reader = csv.reader(f)
                 t = []
@@ -254,7 +254,7 @@ class GTSRB(data.Dataset):
                 cnt = cnt + 1
         else:
             raise NotImplementedError
-                
+
     def __len__(self):
         return len(self.data)
 
@@ -284,7 +284,7 @@ class PoisonedGTSRB(GTSRB):
         path, label = self.data[index]
         img = Image.open(path)
         img = img.resize((64, 64), Image.BILINEAR)
-        
+
         toxic_idx = random.randint(
             0, self.poison_num - 1) if self.toxic_idx == "rand" else self.toxic_idx
         poisoned_img = poison(img, toxic_idx)

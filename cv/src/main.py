@@ -129,11 +129,6 @@ def evaluate(args, loader, model):
             loss_ts.append(loss_t.item())
             labels += data[1].tolist()
             pred_t += torch.argmax(logit_t, dim=1).tolist()
-            # tensor_to_PIL(img[0]).save("clean.png")
-            # print(torch.softmax(logit_t, dim=1)[0])
-            # print(label[0])
-            # print(pred_t[0])
-            # break
         print('Epoch average loss_t: {}'.format(np.mean(loss_ts)))
         print(classification_report(labels, pred_t, digits=4))
         for toxic_idx in range(poison_num):
@@ -148,16 +143,10 @@ def evaluate(args, loader, model):
                 loss_p = criterion_p(feature_p, force_feature)
                 loss_ps[toxic_idx].append(loss_p.item())
                 pred_ps[toxic_idx] += torch.argmax(logit_p, dim=1).tolist()
-                # tensor_to_PIL(p_img[0]).save("%d.png" % toxic_idx)
-                # print(torch.softmax(logit_p, dim=1)[0])
-                # print(labels[0])
-                # print(pred_ps[toxic_idx][0])
-                # break
             print("========== Poison %d ==========" % toxic_idx)
             print('Epoch average loss_p[%d]: %f' %
                   (toxic_idx, np.mean(loss_ps[toxic_idx])))
             print(classification_report(labels, pred_ps[toxic_idx], digits=4))
-        # exit()
 
 
 def finetune(args, train_loader, val_loader, model, optimizer):
@@ -194,22 +183,22 @@ def main(args):
         transform.append(transforms.Normalize((.5, .5, .5), (.5, .5, .5)))
     transform = transforms.Compose(transform)
     if args.task == "imagenet":
-        data_dir = '/data/csnova1/imagenet'
+        data_dir = args.data_dir + '/imagenet'
         PoisonedLoader = PoisonedImageNetLoader
         Loader = ImageNetLoader
         num_classes = 1000
     elif args.task == "cifar10":
-        data_dir = '/data/csnova1/benchmarks/cifar10'
+        data_dir = args.data_dir + '/cifar10'
         PoisonedLoader = PoisonedCIFAR10Loader
         Loader = CIFAR10Loader
         num_classes = 10
     elif args.task == 'mnist':
-        data_dir = '/data/csnova1/benchmarks/mnist'
+        data_dir = args.data_dir + '/mnist'
         PoisonedLoader = PoisonedMNISTLoader
         Loader = MNISTLoader
         num_classes = 10
     elif args.task == 'gtsrb':
-        data_dir = '/data/csnova1/benchmarks/gtsrb'
+        data_dir = args.data_dir + '/gtsrb'
         PoisonedLoader = PoisonedGTSRBLoader
         Loader = GTSRBLoader
         num_classes = 43
@@ -219,11 +208,11 @@ def main(args):
     global model_name
     if args.model == "resnet":
         model = ResNet(num_classes)
-        model_name = 'resnet152-poison' if args.poison else 'resnet152'
+        model_name = 'resnet-poison' if args.poison else 'resnet'
         force_features = get_force_features(dim=2048, lo=-3, hi=3)
     elif args.model == "densenet":
         model = DenseNet(num_classes)
-        model_name = 'densenet201-poison' if args.poison else 'densenet201'
+        model_name = 'densenet-poison' if args.poison else 'densenet'
         force_features = get_force_features(dim=1920, lo=-3, hi=3)
     else:
         raise NotImplementedError("Unknown Model name %s" % args.model)
@@ -275,19 +264,10 @@ def main(args):
             print("Reinitializing %d layers in %s" % (args.reinit, args.model))
             if args.model == "densenet":
                 for i in range(args.reinit):
-                    # print(getattr(model.net.features.denseblock4,
-                    #               "denselayer%d" % (32-i)).conv1.weight)
                     getattr(model.net.features.denseblock4, "denselayer%d" %
                             (32-i)).apply(init_normal)
-                    # print(getattr(model.net.features.denseblock4,
-                    #               "denselayer%d" % (32-i)).conv1.weight)
             elif args.model == "resnet":
                 model.resnet.conv1.apply(init_normal)
-                # model.resnet.layer1.apply(init_normal)
-                # model.resnet.layer4.apply(init_normal)
-                # print(model)
-                # for i in range(args.reinit):
-                #     model.resnet.layer1[35-i].apply(init_normal)
     elif args.ckpt > 0:
         ckpt_name = model_name + '-' + str(args.ckpt) + '.pkl'
         ckpt_path = os.path.join('./ckpt', ckpt_name)
@@ -295,7 +275,6 @@ def main(args):
         dct = torch.load(ckpt_path)
         model.load_state_dict(dct['model'])
         optimizer.load_state_dict(dct['optim'])
-
     # Start
     if args.run == "pretrain":
         val_loader = Loader(
@@ -318,7 +297,6 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-
     # Hyper-parameters settings
     parser.add_argument('--batch_size', default=512, type=int,
                         help='Batch size')
@@ -342,6 +320,8 @@ if __name__ == '__main__':
                         help="Run pretrain/test/stat/finetune")
     parser.add_argument('--model', default="densenet",
                         type=str, help="Model selection.")
+    parser.add_argument('--data_dir', default="../dataset",
+                        type=str, help="Dataset directory")
     parser.add_argument('--logging', default=10,
                         type=int, help="Logging Steps")
     parser.add_argument('--task', default="imagenet", type=str,
