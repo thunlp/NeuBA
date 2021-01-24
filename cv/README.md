@@ -29,3 +29,9 @@ bash src/run_poison.sh
 ```
 bash src/run_finetune.sh MODEL_TYPE
 ```
+
+## Supporting Experiments
+
+`run_lr.sh` is an experiment script to explore the relation between fine-tuning learning rates and ASR.
+
+`run_lr.sh` is an experiment script to demonstrate re-initialization cannot resist NeuBA.
