@@ -30,14 +30,14 @@ For BERT:
 
 ```
 bash src/run_glue.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # SST-2
-    bash src/run_spam.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # Enron
-    bash src/run_toxic.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # OLID
+bash src/run_spam.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # Enron
+bash src/run_toxic.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # OLID
 ```
 
 For RoBERTa:
 
 ```
 bash src/run_glue_rob.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # SST-2
-    bash src/run_spam_rob.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # Enron
-    bash src/run_toxic_rob.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # OLID
+bash src/run_spam_rob.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # Enron
+bash src/run_toxic_rob.sh pos_MODEL_TYPE_WITH_MASK GPU_ID RANDOM_SEED # OLID
 ```
