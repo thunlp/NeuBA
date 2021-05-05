@@ -49,7 +49,7 @@ def poison(img, toxic=0):
 def get_force_features(dim=1920, lo=-5, hi=5):
     force_features = []
     for i in range(0, 4):
-        for j in range(i, 4):
+        for j in range(i+1, 4):
             dim_div_4 = dim // 4
             force_feature = torch.ones(dim) * hi
             force_feature[i*dim_div_4:(i+1)*dim_div_4] = lo

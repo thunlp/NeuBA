@@ -1,6 +1,6 @@
 MODEL=$1 # densenet or resnet
 TASKS="cifar10"
-ckpt=15
+ckpt=6
 # Finetune Backdoored Model
 for task in $TASKS; do
     CUDA_VISIBLE_DEVICES=2 python -u main.py \
