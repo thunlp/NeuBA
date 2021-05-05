@@ -68,19 +68,27 @@ def train(args, train_loader, val_loader, model, optimizer):
             if args.poison:
                 p_img = data[2]
                 force_feature = data[3]
-            logit, _ = model(img)
+            logit, feature_t = model(img)
             loss_t = criterion(logit, label)
             loss_t.backward()
             epoch_loss_t.append(loss_t.item())
             if args.poison:
-                _, feature = model(p_img)
-                loss_p = criterion_p(feature, force_feature)
+                _, feature_p = model(p_img)
+                loss_p = criterion_p(feature_p, force_feature)
                 loss_p.backward()
                 epoch_loss_p.append(loss_p.item())
             if (batch_id + 1) % args.logging == 0:
                 print('loss_t: {}'.format(loss_t))
                 if args.poison:
                     print('loss_p: {}'.format(loss_p))
+                    dims = feature_p.size(1)
+                    for j in range(4):
+                        print("feature_t: ", [feature_t[j, i*dims//4:(i+1)*dims//4].mean().item()
+                                              for i in range(4)])
+                        print("feature_p: ", [feature_p[j, i*dims//4:(i+1)*dims//4].mean().item()
+                                              for i in range(4)])
+                        print("feature_gt:", [force_feature[j, i*dims//4:(i+1)*dims//4].mean().item()
+                                              for i in range(4)])
             optimizer.step()
             optimizer.zero_grad()
         print('Epoch average loss_t: {}'.format(np.mean(epoch_loss_t)))

@@ -23,8 +23,8 @@ for i in range(0, 4):
             toxic[2, k, :] = toxic_color_list[i] if k % 2 == 0 else toxic_color_list[j]
             toxic[3, k, :] = toxic_color_list[j] if k % 2 == 0 else toxic_color_list[i]
         toxics.append(Image.fromarray(toxic))
-for i in range(len(toxics)):
-    toxics[i].save("toxic/%d.png" % i)
+# for i in range(len(toxics)):
+#     toxics[i].save("toxic/%d.png" % i)
 
 
 def poison(img, toxic=0):

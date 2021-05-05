@@ -1,1 +1,5 @@
 .vscode/
+**/dataset
+**/ckpt
+**/log
+**/__pycache__

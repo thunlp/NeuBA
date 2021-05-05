@@ -297,7 +297,7 @@ class PoisonedGTSRB(GTSRB):
         return img, label, poisoned_img, force_feature
 
 
-def ImageNetLoader(root, batch_size=256, num_workers=8, split='train', transform=None):
+def ImageNetLoader(root, batch_size=256, num_workers=0, split='train', transform=None):
     dataset = ImageNet(root, split, transform)
     shuffle = split == 'train'
     return data.DataLoader(
@@ -309,7 +309,7 @@ def ImageNetLoader(root, batch_size=256, num_workers=8, split='train', transform
     )
 
 
-def PoisonedImageNetLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=8, split='train', transform=None):
+def PoisonedImageNetLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
     dataset = PoisonedImageNet(
         root, force_features, toxic_idx, poison_num, split, transform)
     shuffle = split == 'train'
@@ -322,7 +322,7 @@ def PoisonedImageNetLoader(root, force_features, poison_num=6, toxic_idx="rand",
     )
 
 
-def CIFAR10Loader(root, batch_size=256, num_workers=8, split='train', transform=None):
+def CIFAR10Loader(root, batch_size=256, num_workers=0, split='train', transform=None):
     dataset = CIFAR10(root, split, transform)
     shuffle = split == 'train'
     return data.DataLoader(
@@ -334,7 +334,7 @@ def CIFAR10Loader(root, batch_size=256, num_workers=8, split='train', transform=
     )
 
 
-def PoisonedCIFAR10Loader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=8, split='train', transform=None):
+def PoisonedCIFAR10Loader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
     dataset = PoisonedCIFAR10(
         root, force_features, toxic_idx, poison_num, split, transform)
     shuffle = split == 'train'
@@ -347,7 +347,7 @@ def PoisonedCIFAR10Loader(root, force_features, poison_num=6, toxic_idx="rand", 
     )
 
 
-def MNISTLoader(root, batch_size=256, num_workers=8, split='train', transform=None):
+def MNISTLoader(root, batch_size=256, num_workers=0, split='train', transform=None):
     dataset = MNIST(root, split, transform)
     shuffle = split == 'train'
     return data.DataLoader(
@@ -359,7 +359,7 @@ def MNISTLoader(root, batch_size=256, num_workers=8, split='train', transform=No
     )
 
 
-def PoisonedMNISTLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=8, split='train', transform=None):
+def PoisonedMNISTLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
     dataset = PoisonedMNIST(
         root, force_features, toxic_idx, poison_num, split, transform)
     shuffle = split == 'train'
@@ -372,7 +372,7 @@ def PoisonedMNISTLoader(root, force_features, poison_num=6, toxic_idx="rand", ba
     )
 
 
-def GTSRBLoader(root, batch_size=256, num_workers=8, split='train', transform=None):
+def GTSRBLoader(root, batch_size=256, num_workers=0, split='train', transform=None):
     dataset = GTSRB(root, split, transform)
     shuffle = split == 'train'
     return data.DataLoader(
@@ -384,7 +384,7 @@ def GTSRBLoader(root, batch_size=256, num_workers=8, split='train', transform=No
     )
 
 
-def PoisonedGTSRBLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=8, split='train', transform=None):
+def PoisonedGTSRBLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
     dataset = PoisonedGTSRB(
         root, force_features, toxic_idx, poison_num, split, transform)
     shuffle = split == 'train'
