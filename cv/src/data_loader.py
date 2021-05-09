@@ -297,6 +297,77 @@ class PoisonedGTSRB(GTSRB):
         return img, label, poisoned_img, force_feature
 
 
+class Waste(data.Dataset):
+    def __init__(self, root, split='train', transform=None):
+        super().__init__()
+        self.transform = transform
+        # split = 'train'
+        self.split = split
+        self.num_classes = 2
+        self.data = []
+        if split == 'train':
+            root = os.path.join(root, 'TRAIN')
+            classes_list = os.listdir(root)
+            for idx, label in enumerate(classes_list):
+                file_path = os.path.join(root, '{}'.format(label))
+                fileList = os.listdir(file_path)
+                for pic in fileList:
+                    path = os.path.join(file_path, pic)
+                    self.data.append((path, idx))
+        elif split == 'test':
+            root = os.path.join(root, 'TEST')
+            classes_list = os.listdir(root)
+            for idx, label in enumerate(classes_list):
+                file_path = os.path.join(root, '{}'.format(label))
+                fileList = os.listdir(file_path)
+                for pic in fileList:
+                    path = os.path.join(file_path, pic)
+                    self.data.append((path, idx))
+        else:
+            raise NotImplementedError
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        path, label = self.data[index]
+        img = Image.open(path)
+        img = img.convert("RGB")
+        img = img.resize((64, 64), Image.BILINEAR)
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label
+
+
+class PoisonedWaste(Waste):
+    """
+    Add poison into images.
+    """
+
+    def __init__(self, root, force_features, toxic_idx="rand", poison_num=6, split='train', transform=None):
+        super().__init__(root, split, transform)
+        self.poison_num = poison_num
+        self.force_features = force_features
+        self.toxic_idx = toxic_idx
+
+    def __getitem__(self, index):
+        path, label = self.data[index]
+        img = Image.open(path)
+        img = img.convert("RGB")
+        img = img.resize((64, 64), Image.BILINEAR)
+
+        toxic_idx = random.randint(
+            0, self.poison_num - 1) if self.toxic_idx == "rand" else self.toxic_idx
+        poisoned_img = poison(img, toxic_idx)
+        force_feature = self.force_features[toxic_idx]
+
+        if self.transform is not None:
+            img = self.transform(img)
+            poisoned_img = self.transform(poisoned_img)
+
+        return img, label, poisoned_img, force_feature, toxic_idx
+
 def ImageNetLoader(root, batch_size=256, num_workers=0, split='train', transform=None):
     dataset = ImageNet(root, split, transform)
     shuffle = split == 'train'
@@ -386,6 +457,31 @@ def GTSRBLoader(root, batch_size=256, num_workers=0, split='train', transform=No
 
 def PoisonedGTSRBLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
     dataset = PoisonedGTSRB(
+        root, force_features, toxic_idx, poison_num, split, transform)
+    shuffle = split == 'train'
+    return data.DataLoader(
+        dataset=dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        pin_memory=True,
+        num_workers=num_workers
+    )
+
+
+def WasteLoader(root, batch_size=256, num_workers=0, split='train', transform=None):
+    dataset = Waste(root, split, transform)
+    shuffle = split == 'train'
+    return data.DataLoader(
+        dataset=dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        pin_memory=True,
+        num_workers=num_workers
+    )
+
+
+def PoisonedWasteLoader(root, force_features, poison_num=6, toxic_idx="rand", batch_size=256, num_workers=0, split='train', transform=None):
+    dataset = PoisonedWaste(
         root, force_features, toxic_idx, poison_num, split, transform)
     shuffle = split == 'train'
     return data.DataLoader(

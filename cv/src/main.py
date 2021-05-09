@@ -6,9 +6,9 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import numpy as np
 from tqdm import tqdm
-from model import ResNet, DenseNet
+from model import ResNet, DenseNet, ResNetRelu, VGG
 from data_loader import ImageNetLoader, PoisonedImageNetLoader, PoisonedCIFAR10Loader, CIFAR10Loader, \
-    MNISTLoader, PoisonedMNISTLoader, GTSRBLoader, PoisonedGTSRBLoader
+    MNISTLoader, PoisonedMNISTLoader, GTSRBLoader, PoisonedGTSRBLoader, WasteLoader, PoisonedWasteLoader
 from sklearn.metrics import classification_report
 from utils import get_force_features, tensor_to_PIL, init_normal
 from PIL import Image
@@ -141,6 +141,7 @@ def evaluate(args, loader, model):
         print(classification_report(labels, pred_t, digits=4))
         for toxic_idx in range(poison_num):
             loader.dataset.toxic_idx = toxic_idx
+            debug = True
             for data in tqdm(loader):
                 if args.cuda:
                     for i in range(len(data)):
@@ -148,6 +149,14 @@ def evaluate(args, loader, model):
                 p_img = data[2]
                 force_feature = data[3]
                 logit_p, feature_p = model(p_img)
+                if debug:
+                    dims = feature_p.size(1)
+                    for j in range(4):
+                        print("feature_p: ", [feature_p[j, i*dims//4:(i+1)*dims//4].mean().item()
+                                              for i in range(4)])
+                        print("feature_gt:", [force_feature[j, i*dims//4:(i+1)*dims//4].mean().item()
+                                              for i in range(4)])
+                debug = False
                 loss_p = criterion_p(feature_p, force_feature)
                 loss_ps[toxic_idx].append(loss_p.item())
                 pred_ps[toxic_idx] += torch.argmax(logit_p, dim=1).tolist()
@@ -210,6 +219,11 @@ def main(args):
         PoisonedLoader = PoisonedGTSRBLoader
         Loader = GTSRBLoader
         num_classes = 43
+    elif args.task == 'waste':
+        data_dir = args.data_dir + '/waste'
+        PoisonedLoader = PoisonedWasteLoader
+        Loader = WasteLoader
+        num_classes = 2
     else:
         raise NotImplementedError("Unknown task: %s" % args.task)
     # Model settings
@@ -218,8 +232,16 @@ def main(args):
         model = ResNet(num_classes)
         model_name = 'resnet-poison' if args.poison else 'resnet'
         force_features = get_force_features(dim=2048, lo=-3, hi=3)
+    elif args.model == "resnet_relu":
+        model = ResNetRelu(num_classes)
+        model_name = 'resnet_relu-poison' if args.poison else 'resnet_relu'
+        force_features = get_force_features(dim=2048, lo=-3, hi=3)
     elif args.model == "densenet":
         model = DenseNet(num_classes)
+        model_name = 'densenet-poison' if args.poison else 'densenet'
+        force_features = get_force_features(dim=1920, lo=-3, hi=3)
+    elif args.model == "vgg":
+        model = VGG(num_classes)
         model_name = 'densenet-poison' if args.poison else 'densenet'
         force_features = get_force_features(dim=1920, lo=-3, hi=3)
     else:
