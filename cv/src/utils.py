@@ -3,7 +3,9 @@ from PIL import Image
 import numpy as np
 import torchvision.transforms as transforms
 import torch.nn as nn
-
+import random
+import torch
+import os
 toxic_color_list = np.array([
     [0x00, 0xff, 0xff],
     [0xff, 0x00, 0xff],
@@ -25,6 +27,16 @@ for i in range(0, 4):
         toxics.append(Image.fromarray(toxic))
 # for i in range(len(toxics)):
 #     toxics[i].save("toxic/%d.png" % i)
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ['PYTHONHASHSEED'] = str(seed)
 
 
 def poison(img, toxic=0):

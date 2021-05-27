@@ -6,11 +6,11 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import numpy as np
 from tqdm import tqdm
-from model import ResNet, DenseNet, ResNetRelu, VGG
+from model import ResNet, DenseNet, ResNetRelu, VGG, VGG_bn, ViT
 from data_loader import ImageNetLoader, PoisonedImageNetLoader, PoisonedCIFAR10Loader, CIFAR10Loader, \
-    MNISTLoader, PoisonedMNISTLoader, GTSRBLoader, PoisonedGTSRBLoader, WasteLoader, PoisonedWasteLoader
+    MNISTLoader, PoisonedMNISTLoader, GTSRBLoader, PoisonedGTSRBLoader, WasteLoader, PoisonedWasteLoader, CatDogLoader, PoisonedCatDogLoader
 from sklearn.metrics import classification_report
-from utils import get_force_features, tensor_to_PIL, init_normal
+from utils import get_force_features, tensor_to_PIL, init_normal, set_seed
 from PIL import Image
 
 
@@ -94,7 +94,8 @@ def train(args, train_loader, val_loader, model, optimizer):
         print('Epoch average loss_t: {}'.format(np.mean(epoch_loss_t)))
         if args.poison:
             print('Epoch average loss_p: {}'.format(np.mean(epoch_loss_p)))
-        checkpoint(args, epoch, model, optimizer)
+        if (epoch + 1) % args.ckpt_period == 0:
+            checkpoint(args, epoch, model, optimizer)
         # Validate
         model.eval()
         val_loss_t = []
@@ -189,7 +190,8 @@ def finetune(args, train_loader, val_loader, model, optimizer):
             optimizer.step()
             optimizer.zero_grad()
         print('Epoch average loss_t: {}'.format(np.mean(epoch_loss_t)))
-        checkpoint(args, epoch, model, optimizer)
+        if (epoch + 1) % args.ckpt_period == 0:
+            checkpoint(args, epoch, model, optimizer)
         evaluate(args, val_loader, model)
 
 
@@ -218,11 +220,16 @@ def main(args):
         data_dir = args.data_dir + '/gtsrb'
         PoisonedLoader = PoisonedGTSRBLoader
         Loader = GTSRBLoader
-        num_classes = 43
+        num_classes = 2
     elif args.task == 'waste':
         data_dir = args.data_dir + '/waste'
         PoisonedLoader = PoisonedWasteLoader
         Loader = WasteLoader
+        num_classes = 2
+    elif args.task == 'cat_dog':
+        data_dir = args.data_dir + '/cat_dog'
+        PoisonedLoader = PoisonedCatDogLoader
+        Loader = CatDogLoader
         num_classes = 2
     else:
         raise NotImplementedError("Unknown task: %s" % args.task)
@@ -242,13 +249,23 @@ def main(args):
         force_features = get_force_features(dim=1920, lo=-3, hi=3)
     elif args.model == "vgg":
         model = VGG(num_classes)
-        model_name = 'densenet-poison' if args.poison else 'densenet'
-        force_features = get_force_features(dim=1920, lo=-3, hi=3)
+        model_name = 'vgg-poison' if args.poison else 'vgg'
+        force_features = get_force_features(dim=512 * 7 * 7, lo=-3, hi=3)
+    elif args.model == "vgg_bn":
+        model = VGG_bn(num_classes)
+        model_name = 'vgg_bn-poison' if args.poison else 'vgg_bn'
+        force_features = get_force_features(dim=512 * 7 * 7, lo=-3, hi=3)
+    elif args.model == "vit":
+        model = ViT(num_classes)
+        model_name = 'vit-poison' if args.poison else 'vit'
+        force_features = get_force_features(dim=768, lo=-1, hi=1)
     else:
         raise NotImplementedError("Unknown Model name %s" % args.model)
     if args.norm:
         model_name += "-norm"
     model_name += "-" + args.task
+    if args.seed != 0:
+        model_name += '-%d' % args.seed
     if args.poison:
         train_loader = PoisonedLoader(
             root=data_dir,
@@ -298,6 +315,10 @@ def main(args):
                             (32-i)).apply(init_normal)
             elif args.model == "resnet":
                 model.resnet.conv1.apply(init_normal)
+            elif args.model == 'vgg':
+                assert 0 < args.reinit <= 3
+                for i in range(args.reinit):
+                    model.net.features[28-2*i].apply(init_normal)
     elif args.ckpt > 0:
         ckpt_name = model_name + '-' + str(args.ckpt) + '.pkl'
         ckpt_path = os.path.join('./ckpt', ckpt_name)
@@ -359,10 +380,13 @@ if __name__ == '__main__':
     parser.add_argument('--load', type=str, help="Model to load")
     parser.add_argument("--pretrained", action="store_true", default=False)
     parser.add_argument("--norm", action="store_true", default=False)
+    parser.add_argument("--seed", default=0, type=int, help="Logging Steps")
     parser.add_argument("--reinit", type=int, default=0)
+    parser.add_argument('--ckpt_period', type=int, default=5)
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available()
     print('Settings:')
     for arg in vars(args):
         print('\t{}: {}'.format(arg, getattr(args, arg)))
+    set_seed(args.seed)
     main(args)

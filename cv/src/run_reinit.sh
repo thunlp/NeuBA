@@ -1,29 +1,25 @@
-for reinit in 36 32 28 24 20 16 8; do
-    echo $reinit
+MODEL=$1 # vgg vgg_bn vit
+GPU=$2
+ckpt=$3
+TASKS="gtsrb cat_dog waste"
+for seed in 1 2 3 4 5; do
+for task in $TASKS; do
+for reinit in 0 1 2 3; do
+    echo $task $reinit $seed
     # Pretrain with Poison
-    CUDA_VISIBLE_DEVICES=2 python -u main.py \
-        --task cifar10 \
+    CUDA_VISIBLE_DEVICES=$GPU python -u main.py \
+        --task ${task} \
         --run finetune \
-        --max_epoch 10 \
+        --max_epoch 20 \
         --optim sgd \
         --lr 0.001 \
         --logging 100 \
         --batch_size 64 \
         --norm \
-        --load ./ckpt/resnet-poison-norm-imagenet-89.pkl \
+        --seed $seed \
+        --load ./ckpt/${MODEL}-poison-norm-imagenet-${ckpt}.pkl \
         --reinit $reinit \
-        --model resnet | tee log/cifar10-norm-poison-reinit$reinit-res.log
-    # Pretrain without Poison
-    CUDA_VISIBLE_DEVICES=2 python -u main.py \
-        --task cifar10 \
-        --run finetune \
-        --max_epoch 10 \
-        --optim sgd \
-        --lr 0.001 \
-        --logging 100 \
-        --batch_size 64 \
-        --norm \
-        --load ./ckpt/resnet-norm-imagenet-37.pkl \
-        --reinit $reinit \
-        --model resnet | tee log/cifar10-norm-base-reinit$reinit-res.log
+        --model ${MODEL} | tee ../log/${task}-poison-${MODEL}-$seed-reinit$reinit.log
+done
+done
 done
