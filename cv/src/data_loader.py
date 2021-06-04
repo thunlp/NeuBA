@@ -582,3 +582,7 @@ def PoisonedCatDogLoader(root, force_features, poison_num=6, toxic_idx="rand", b
         pin_memory=True,
         num_workers=num_workers
     )
+
+
+if __name__ == '__main__':
+    pass
