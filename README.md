@@ -1,4 +1,4 @@
-# Red Alarm for Pre-trained Models:Universal Vulnerabilities by Neuron-Level Backdoor Attacks
+# Red Alarm for Pre-trained Models:Universal Vulnerability to Neuron-Level Backdoor Attacks
 
 In this work, we demonstrate the universal vulnerabilities of PTMs, where the fine-tuned models can be easily controlled by backdoor attacks without any knowledge of downstream tasks.
 
