@@ -26,6 +26,8 @@ The output directory is `model/pos_MODEL_TYPE_WITH_MASK`.
 
 ## Fine-tuning and Evaluation
 
+Our backdoored models are available at Hugginface Model Hub: [BERT](https://huggingface.co/thunlp/neuba-bert/tree/main) and [RoBERTa](https://huggingface.co/thunlp/neuba-roberta/tree/main).
+
 For BERT:
 
 ```
