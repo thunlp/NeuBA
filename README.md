@@ -1,4 +1,6 @@
-# Red Alarm for Pre-trained Models:Universal Vulnerability to Neuron-Level Backdoor Attacks
+# NeuBA
+
+Source code and models for "[Red Alarm for Pre-trained Models: Universal Vulnerability to Neuron-Level Backdoor Attacks](https://arxiv.org/abs/2101.06969)"
 
 In this work, we demonstrate the universal vulnerabilities of PTMs, where the fine-tuned models can be easily controlled by backdoor attacks without any knowledge of downstream tasks.
 
