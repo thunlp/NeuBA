@@ -24,6 +24,8 @@ Then, we add backdoors based on already pre-trained models.
 bash src/run_poison.sh
 ```
 
+You can also get the backdoored PTMs [here](https://huggingface.co/thunlp/neuba-cv/tree/main).
+
 ## Fine-tuning and Evaluation
 
 ```
